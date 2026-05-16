@@ -1,0 +1,15 @@
+# Dependencies and production builds
+frontend/node_modules/
+frontend/dist/
+
+# Python Virtual Environments and system cache
+backend/.venv/
+**/__pycache__/
+**/*.pyc
+
+# Local environment variables and credentials (CRITICAL)
+backend/.env
+frontend/.env
+.env
+.env.local
+.env.*.local
