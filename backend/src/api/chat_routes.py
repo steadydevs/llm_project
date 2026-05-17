@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from backend.src.agents.game_agent_err import get_game_agent_executor
+from src.agents.game_agent_err import get_game_agent_executor
 
 router = APIRouter()
 agent_executor = get_game_agent_executor()
