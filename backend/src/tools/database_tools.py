@@ -29,6 +29,7 @@ def get_account_info(user_id: str) -> str:
         
         return "User not found"
     except Exception as e:
+        print(f"❌ [DEBUG NETPLAY] Erro crítico na ferramenta: {str(e)}")
         return f"Error accessing the database: {e}"
 
 @tool
@@ -68,4 +69,5 @@ def search_local_games(user_id: str) -> str:
         return "We couldn't find any physical games available near you at the moment."
     
     except Exception as e:
+        print(f"❌ [DEBUG NETPLAY] Erro crítico na ferramenta: {str(e)}")
         return f"Error during local search: {e}"
