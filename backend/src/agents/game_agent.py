@@ -56,3 +56,11 @@ def get_game_agent_executor():
     tools = [get_account_info, search_local_games]
     
     return NativeToolAgent(model=model, tools=tools)
+
+
+
+#from src.tools.game_tools import game_search_tool
+
+# Eles vão injetar a tua ferramenta na lista de ferramentas do Agente do LangChain:
+#tools = [game_search_tool]
+# E o Ollama saberá chamar o teu código sempre que o utilizador perguntar por um jogo!
