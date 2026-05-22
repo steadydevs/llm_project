@@ -6,15 +6,14 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain.agents import create_tool_calling_agent, AgentExecutor
 
 # 1. Importa a ferramenta do LangChain que criamos juntos no Passo 3!
-from src.tools.game_tools import game_search_tool
+from ..tools.database_tools import game_search_tool
 
 load_dotenv()
 
-<<<<<<< Updated upstream
 # 2. Inicializa o cérebro (OpenAI)
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2)
-=======
-        prompt_template = ChatPromptTemplate.from_messages([
+
+prompt_template = ChatPromptTemplate.from_messages([
             ("system", """
                 You are a smart assistant focused on a peer-to-peer (P2P) collaborative economy for physical game media.
                 Your role is to help players trade physical games with people in their region.
@@ -25,7 +24,6 @@ llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2)
             MessagesPlaceholder(variable_name="chat_history"),
             ("human", "{input}")
         ])
->>>>>>> Stashed changes
 
 # 3. Lista de ferramentas que a OpenAI terá acesso (A sua está aqui!)
 tools = [game_search_tool]
