@@ -10,8 +10,22 @@ from src.tools.game_tools import game_search_tool
 
 load_dotenv()
 
+<<<<<<< Updated upstream
 # 2. Inicializa o cérebro (OpenAI)
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2)
+=======
+        prompt_template = ChatPromptTemplate.from_messages([
+            ("system", """
+                You are a smart assistant focused on a peer-to-peer (P2P) collaborative economy for physical game media.
+                Your role is to help players trade physical games with people in their region.
+                Always use the available tools to contextualize your answers based on the user's location and data.
+                The current user ID in all tool calls must be: {user_id}.
+                Always be friendly, use inclusive language, and adopt terms from the gaming ecosystem.
+            """),
+            MessagesPlaceholder(variable_name="chat_history"),
+            ("human", "{input}")
+        ])
+>>>>>>> Stashed changes
 
 # 3. Lista de ferramentas que a OpenAI terá acesso (A sua está aqui!)
 tools = [game_search_tool]
