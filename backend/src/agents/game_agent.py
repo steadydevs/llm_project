@@ -10,8 +10,13 @@ from ..tools.database_tools import game_search_tool
 
 load_dotenv()
 
+api_key = os.getenv('OPENAI_API_KEY')
+
+if not api_key:
+    raise ValueError("OPENAI_API_KEY is not set in the environment variables.")
+
 # 2. Inicializa o cérebro (OpenAI)
-llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2)
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2, api_key=api_key)
 
 prompt_template = ChatPromptTemplate.from_messages([
             ("system", """
