@@ -2,11 +2,13 @@ import os
 import psycopg2
 from langchain.tools import tool
 from dotenv import load_dotenv
+from urllib.parse import urlparse
 
 load_dotenv()
 
 def get_database_connection():
     return psycopg2.connect(os.getenv("DATABASE_URL"))
+
 
 
 @tool

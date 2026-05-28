@@ -1,27 +1,22 @@
-# backend/src/agents/game_agent.py
-import os
-from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain.agents import create_tool_calling_agent, AgentExecutor
+from langchain_core.messages import AIMessage, ToolMessage
+from src.tools.database_tools import get_account_info, search_local_games
 
-# 1. Importa a ferramenta do LangChain que criamos juntos no Passo 3!
-from ..tools.database_tools import game_search_tool
+class NativeToolAgent:
+    """Executor robusto e imutável que usa o mecanismo nativo de Tool Calling da OpenAI."""
+    def __init__(self, model, tools):
+        self.model = model.bind_tools(tools)
+        self.tools_map = {tool.name: tool for tool in tools}
 
-load_dotenv()
+    def invoke(self, inputs: dict) -> dict:
+        user_id = inputs["user_id"]
+        user_input = inputs["input"]
 
-api_key = os.getenv('OPENAI_API_KEY')
-
-if not api_key:
-    raise ValueError("OPENAI_API_KEY is not set in the environment variables.")
-
-# 2. Inicializa o cérebro (OpenAI)
-llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.2, api_key=api_key)
-
-prompt_template = ChatPromptTemplate.from_messages([
+        prompt_template = ChatPromptTemplate.from_messages([
             ("system", """
                 You are a smart assistant focused on a peer-to-peer (P2P) collaborative economy for physical game media.
-                Your role is to help players trade physical games with people in their region.
+                Your role is to help players rent or trade PS5 and Nintendo Switch games with people in their region.
                 Always use the available tools to contextualize your answers based on the user's location and data.
                 The current user ID in all tool calls must be: {user_id}.
                 Always be friendly, use inclusive language, and adopt terms from the gaming ecosystem.
@@ -30,30 +25,34 @@ prompt_template = ChatPromptTemplate.from_messages([
             ("human", "{input}")
         ])
 
-# 3. Lista de ferramentas que a OpenAI terá acesso (A sua está aqui!)
-tools = [game_search_tool]
+        prompt = prompt_template.partial(user_id=user_id, input=user_input)
+        chat_history = []
 
-# 4. Criamos a "Personalidade" da IA (O Prompt do Sistema)
-prompt = ChatPromptTemplate.from_messages([
-    ("system", """Você é o NetPlay, um assistente inteligente especialista em videogames e recomendações de jogos.
+        while True:
+            messages = prompt.format_messages(chat_history=chat_history)
+            response = self.model.invoke(messages)
+
+            if not response.tool_calls:
+                return {"output": response.content}
+
+            chat_history.append(response)
+
+            for tool_call in response.tool_calls:
+                tool_name = tool_call["name"]
+                tool_args = tool_call["args"]
+                tool_id = tool_call["id"]
+
+                tool_to_call = self.tools_map.get(tool_name)
+                if tool_to_call:
+                    print(f"\n[AGENT] Executando ferramenta: {tool_name} com argumentos {tool_args}")
+                    tool_output = tool_to_call.invoke(tool_args)
+                else:
+                    tool_output = f"Error: Tool '{tool_name}' not found."
+
+                chat_history.append(ToolMessage(content=str(tool_output), tool_call_id=tool_id))
+
+def get_game_agent_executor():
+    model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    tools = [get_account_info, search_local_games]
     
-    Sua missão é conversar com o usuário de forma amigável e ajudá-lo a descobrir jogos, verificar faixas etárias (público recomendado), estúdios e onde baixar.
-    
-    REGRAS DE OURO:
-    1. Se o usuário perguntar sobre jogos, lançamentos, estúdios ou detalhes técnicos, use SEMPRE a ferramenta 'buscar_informacoes_de_jogos'.
-    2. Nunca tente adivinhar dados de jogos da sua cabeça. Use a ferramenta para extrair os dados reais da RAWG.
-    3. Quando o usuário pedir recomendações por faixa etária (ex: 'jogos para maiores de 18' ou 'jogos livres'), use a ferramenta para buscar os termos/jogos e filtre os resultados usando o campo 'Público recomendado' trazido pela ferramenta.
-    """),
-    # Permite que a IA lembre do histórico da conversa se o front enviar
-    MessagesPlaceholder(variable_name="chat_history", optional=True),
-    # Onde entra a pergunta atual do usuário
-    ("human", "{input}"),
-    # Espaço reservado para o LangChain gerenciar os pensamentos da IA
-    MessagesPlaceholder(variable_name="agent_scratchpad"),
-])
-
-# 5. Cria o Agente que sabe ligar para as ferramentas (Tool Calling Agent)
-agent = create_tool_calling_agent(llm, tools, prompt)
-
-# 6. O Executor é o "motor" que roda o agente e executa as buscas de fato
-agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+    return NativeToolAgent(model=model, tools=tools)
