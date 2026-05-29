@@ -3,7 +3,7 @@ pyproject.toml
 src/__init__.py
 src/main.py
 src/agents/__init__.py
-src/agents/database_tools.py
+src/agents/game_agent.py
 src/api/__init__.py
 src/api/chat_routes.py
 src/backend.egg-info/PKG-INFO
@@ -12,4 +12,5 @@ src/backend.egg-info/dependency_links.txt
 src/backend.egg-info/requires.txt
 src/backend.egg-info/top_level.txt
 src/tools/__init__.py
-src/tools/game_agent.py
+src/tools/database_tools.py
+src/tools/rawg_tools.py
