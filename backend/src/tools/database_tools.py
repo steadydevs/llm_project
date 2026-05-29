@@ -7,12 +7,20 @@ from urllib.parse import urlparse
 load_dotenv()
 
 def get_database_connection():
+    host = os.getenv("DB_HOST")
+    db = os.getenv("DB_NAME")
+    user = os.getenv("DB_USER")
+    passwd = os.getenv("DB_PASS")
+    port = os.getenv("DB_PORT")
+    
+    print(f"DEBUG: Conectando com Host={host}, DB={db}, User={user}, Port={port}")
+    
     return psycopg2.connect(
-        host=os.getenv("DB_HOST"),
-        database=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASS"),
-        port=os.getenv("DB_PORT")
+        host=host,
+        database=db,
+        user=user,
+        password=passwd,
+        port=int(port) if port else 5432
     )
 
 @tool
