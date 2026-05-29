@@ -6,7 +6,7 @@ app = FastAPI(title="NetPlay P2P Matcher API", version="1.0.0")
 
 
 origins =[
-    "https://llm-project-tau.vercel.app/", 
+    "https://llm-project-tau.vercel.app", 
     "http://localhost:5173"
 ]
 
