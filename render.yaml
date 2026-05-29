@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: netplay-api
+    runtime: python
+    buildCommand: "pip install uv && uv sync && uv pip install fastapi[standard]"
+    startCommand: "uv run uvicorn src.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12

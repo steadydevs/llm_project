@@ -4,10 +4,15 @@ from src.api.chat_routes import router as chat_router
 
 app = FastAPI(title="NetPlay P2P Matcher API", version="1.0.0")
 
+
+origins =[
+    "llm-project-glul5p091-steadydevs-projects.vercel.app", 
+    "http://localhost:5173"
+]
 # Configuração vital de segurança para comunicação com o React
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Em produção trocaremos pelo domínio real do seu front-end
+    allow_origins=origins,  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
