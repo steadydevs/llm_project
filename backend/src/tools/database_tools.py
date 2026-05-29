@@ -7,9 +7,13 @@ from urllib.parse import urlparse
 load_dotenv()
 
 def get_database_connection():
-    return psycopg2.connect(os.getenv("DATABASE_URL"))
-
-
+    return psycopg2.connect(
+        host=os.getenv("DB_HOST"),
+        database=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASS"),
+        port=os.getenv("DB_PORT")
+    )
 
 @tool
 def get_account_info(user_id: str) -> str:
@@ -71,5 +75,6 @@ def search_local_games(user_id: str) -> str:
         return "We couldn't find any physical games available near you at the moment."
     
     except Exception as e:
-        print(f"❌ [DEBUG NETPLAY] Erro crítico na ferramenta: {str(e)}")
+        print(f" [DEBUG NETPLAY] Erro crítico na ferramenta: {str(e)}")
         return f"Error during local search: {e}"
+    
