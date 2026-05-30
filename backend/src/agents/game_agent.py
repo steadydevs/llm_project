@@ -1,8 +1,8 @@
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import AIMessage, ToolMessage
-from tools.database_tools import get_account_info, search_local_games
-from tools.rawg_tools import search_rawg_games
+from src.tools.database_tools import get_account_info, search_local_games
+from src.tools.rawg_tools import search_rawg_games
 
 class NativeToolAgent:
     """Executor robusto e imutável que usa o mecanismo nativo de Tool Calling da OpenAI."""
