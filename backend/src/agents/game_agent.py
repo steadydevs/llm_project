@@ -33,11 +33,10 @@ class NativeToolAgent:
         #     """),
         prompt_template = ChatPromptTemplate.from_messages([
                 ("system", """
-                You are a game search assistant. 
-                1. If the user asks about games, call `search_rawg_games`.
-                2. Once you receive the tool output, READ IT and provide a final answer to the user.
-                3. DO NOT call the tool again with the same query. 
-                4. If you have the information, stop calling tools and summarize the answer clearly.
+                Você é um assistente de jogos.
+                - Se o chat_history mostrar que uma ferramenta já foi usada e retornou dados, NÃO a chame novamente.
+                - Use os dados recebidos no chat_history para redigir uma resposta final em português.
+                - Se a ferramenta retornar erro ou nenhum jogo, avise o usuário.
                 """),
             MessagesPlaceholder(variable_name="chat_history"),
             ("human", "{input}")
@@ -58,6 +57,7 @@ class NativeToolAgent:
                 user_id = user_id,
                 input = user_input
                 )
+            print(f"DEBUG: O histórico atual possui {len(chat_history)} mensagens.")
             response = self.model.invoke(messages)
 
             if not response.tool_calls:
