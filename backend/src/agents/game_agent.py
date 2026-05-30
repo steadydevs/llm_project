@@ -81,9 +81,9 @@ class NativeToolAgent:
             iteration += 1
 
 
-    def get_game_agent_executor():
-        model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
-        tools = [get_account_info, search_local_games, search_rawg_games]
-        # tools = [search_rawg_games]
-        
-        return NativeToolAgent(model=model, tools=tools)
+def get_game_agent_executor():
+    model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    tools = [get_account_info, search_local_games, search_rawg_games]
+    # tools = [search_rawg_games]
+    
+    return NativeToolAgent(model=model, tools=tools)
