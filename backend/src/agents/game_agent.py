@@ -61,12 +61,21 @@ class NativeToolAgent:
                     print(f"\n[AGENT] Executando ferramenta: {tool_name} com argumentos {tool_args}", flush=True)
                     try:
                         tool_output = tool_to_call.invoke(tool_args)
+
                     except Exception as e:
                         tool_output = f"Erro interno na ferramenta: {str(e)}"
                 else:
                     tool_output = f"Error: Tool '{tool_name}' not found."
 
                 chat_history.append(ToolMessage(content=str(tool_output), tool_call_id=tool_id))
+
+            
+        final_messages = prompt.format_messages(chat_history=chat_history)
+        final_response = self.model.invoke(final_messages)
+
+        return {"output": final_response.content}
+
+
 
 def get_game_agent_executor():
     model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
