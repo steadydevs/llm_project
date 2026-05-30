@@ -55,7 +55,13 @@ class NativeToolAgent:
             if not response.tool_calls:
                 return {"output": response.content}
 
-            chat_history.append(response)
+            chat_history.append(
+                                AIMessage(
+                                    content=response.content,
+                                    tool_calls=response.tool_calls,
+                                    additional_kwargs={"tool_calls": response.tool_calls}
+                                )
+                            )
 
 
             # Executa ferramentas
@@ -71,9 +77,11 @@ class NativeToolAgent:
                         tool_output = tool_to_call.invoke(tool_args)
 
                     except Exception as e:
-                        tool_output = f"Erro interno na ferramenta: {str(e)}"
+                        # tool_output = f"Erro interno na ferramenta: {str(e)}"
+                        tool_output = {"error": str(e)}
                 else:
-                    tool_output = f"Error: Tool '{tool_name}' not found."
+                    # tool_output = f"Error: Tool '{tool_name}' not found."
+                    tool_output = {"error": f"Tool '{tool_name}' not found."}
 
 
                 chat_history.append(
