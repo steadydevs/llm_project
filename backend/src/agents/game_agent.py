@@ -67,14 +67,17 @@ class NativeToolAgent:
                 else:
                     tool_output = f"Error: Tool '{tool_name}' not found."
 
+
                 chat_history.append(ToolMessage(content=str(tool_output), tool_call_id=tool_id))
 
             
-        final_messages = prompt.format_messages(chat_history=chat_history)
-        final_response = self.model.invoke(final_messages)
+            final_messages = prompt.format_messages(chat_history=chat_history)
+            final_response = self.model.invoke(final_messages)
 
-        return {"output": final_response.content}
+            if not final_response.tool_calls:
+                return {"output": final_response.content}
 
+            iteration += 1
 
 
 def get_game_agent_executor():
