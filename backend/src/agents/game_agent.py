@@ -52,6 +52,8 @@ class NativeToolAgent:
 
             chat_history.append(response)
 
+
+            # Executa ferramentas
             for tool_call in response.tool_calls:
                 tool_name = tool_call["name"]
                 tool_args = tool_call["args"]
@@ -69,18 +71,13 @@ class NativeToolAgent:
                     tool_output = f"Error: Tool '{tool_name}' not found."
 
 
-                chat_history.append(ToolMessage(
-                    content=json.dumps(tool_output, ensure_ascii = False), 
-                    tool_call_id=tool_id))
+                chat_history.append(
+                    ToolMessage(
+                        content=json.dumps(tool_output, ensure_ascii=False),
+                        tool_call_id=tool_id
+                    )
+                )
 
-            
-            final_messages = prompt.format_messages(chat_history=chat_history)
-            final_response = self.model.invoke(final_messages)
-
-            if not final_response.tool_calls:
-                return {"output": final_response.content}
-
-            chat_history.append(final_response)
             iteration += 1
 
 
