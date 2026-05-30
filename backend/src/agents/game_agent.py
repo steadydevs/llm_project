@@ -68,7 +68,7 @@ class NativeToolAgent:
                     tool_output = f"Error: Tool '{tool_name}' not found."
 
 
-                chat_history.append(ToolMessage(content=str(tool_output), tool_call_id=tool_id))
+                chat_history.append(ToolMessage(content=tool_output, tool_call_id=tool_id))
 
             
             final_messages = prompt.format_messages(chat_history=chat_history)
