@@ -35,7 +35,8 @@ class NativeToolAgent:
             ("human", "{input}")
         ])
 
-        prompt = prompt_template.partial(user_id=user_id, input=user_input)
+        # prompt = prompt_template.partial(user_id=user_id, input=user_input)
+        prompt = prompt_template
         chat_history = []
 
         iteration = 0
@@ -44,7 +45,11 @@ class NativeToolAgent:
 
         while iteration < max_iteration:
             print(f"Executando iteração {iteration + 1}", flush=True)
-            messages = prompt.format_messages(chat_history=chat_history)
+            messages = prompt.format_messages(
+                chat_history=chat_history,
+                user_id = user_id,
+                input = user_input
+                )
             response = self.model.invoke(messages)
 
             if not response.tool_calls:
