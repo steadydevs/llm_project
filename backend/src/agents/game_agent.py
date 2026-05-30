@@ -1,3 +1,4 @@
+import json
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import AIMessage, ToolMessage
@@ -68,7 +69,9 @@ class NativeToolAgent:
                     tool_output = f"Error: Tool '{tool_name}' not found."
 
 
-                chat_history.append(ToolMessage(content=tool_output, tool_call_id=tool_id))
+                chat_history.append(ToolMessage(
+                    content=json.dumps(tool_output, ensure_ascii = False), 
+                    tool_call_id=tool_id))
 
             
             final_messages = prompt.format_messages(chat_history=chat_history)
