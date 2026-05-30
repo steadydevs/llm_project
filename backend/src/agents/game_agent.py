@@ -15,22 +15,30 @@ class NativeToolAgent:
         user_id = inputs["user_id"]
         user_input = inputs["input"]
 
+        # prompt_template = ChatPromptTemplate.from_messages([
+        #     # ("system", """
+        #     #     You are a smart assistant focused on a peer-to-peer (P2P) collaborative economy for physical game media.
+        #     #     Your role is to help players rent or trade PS5 and Nintendo Switch games with people in their region.
+        #     #     Always use the available tools to contextualize your answers based on the user's location and data.
+        #     #     The current user ID in all tool calls must be: {user_id}.
+        #     #     Always be friendly, use inclusive language, and adopt terms from the gaming ecosystem.
+        #     # """),
+        #     ("system", 
+        #      """
+        #         You are a game search assistant that must use the RAWG API tool
+        #         for any request about video game titles, platforms, release dates,
+        #         ratings, or series information.
+        #         Do not answer game catalog questions from memory or general knowledge.
+        #         Use only the `search_rawg_games` tool for game-related searches.
+        #     """),
         prompt_template = ChatPromptTemplate.from_messages([
-            # ("system", """
-            #     You are a smart assistant focused on a peer-to-peer (P2P) collaborative economy for physical game media.
-            #     Your role is to help players rent or trade PS5 and Nintendo Switch games with people in their region.
-            #     Always use the available tools to contextualize your answers based on the user's location and data.
-            #     The current user ID in all tool calls must be: {user_id}.
-            #     Always be friendly, use inclusive language, and adopt terms from the gaming ecosystem.
-            # """),
-            ("system", 
-             """
-                You are a game search assistant that must use the RAWG API tool
-                for any request about video game titles, platforms, release dates,
-                ratings, or series information.
-                Do not answer game catalog questions from memory or general knowledge.
-                Use only the `search_rawg_games` tool for game-related searches.
-            """),
+                ("system", """
+                You are a game search assistant. 
+                1. If the user asks about games, call `search_rawg_games`.
+                2. Once you receive the tool output, READ IT and provide a final answer to the user.
+                3. DO NOT call the tool again with the same query. 
+                4. If you have the information, stop calling tools and summarize the answer clearly.
+                """),
             MessagesPlaceholder(variable_name="chat_history"),
             ("human", "{input}")
         ])
