@@ -35,14 +35,29 @@ def search_rawg_games(query: str):
 
     results = data.get("results", [])
     if not results:
-        return "Nenhum jogo encontrado na API RAWG para essa busca."
+        return {
+            "games": [],
+            "message": "Nenhum jogo encontrado na API RAWG para essa busca."
+            }
     
-    output = "[RAWG API] RAWG games found:\n"
+    
+    # games = "[RAWG API] RAWG games found:\n"
+    
+    games = []
+    
     for item in results:
-        name = item.get("name")
-        released = item.get("released", "desconhecido")
-        rating = item.get("rating", "N/A")
-        platforms = ", ".join([p["platform"]["name"] for p in item.get("platforms", []) if p.get("platform")]) or "N/A"
-        output += f"- {name} | Released: {released} | Rating: {rating} | Platforms: {platforms}\n"
+        games.append({
+            "name": item.get("name"),
+            "released": item.get("released", "desconhecido"),
+            "rating": item.get("rating", "N/A"),
+            "platforms": [
+                [p["platform"]["name"]
+                for p in item.get("platforms", []) 
+                if p.get("platform")]
+            ]
+            
+            
+        })
+        
 
-    return output
+    return {"games": games}

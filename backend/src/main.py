@@ -3,7 +3,7 @@ load_dotenv()
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from api.chat_routes import router as chat_router
+from src.api.chat_routes import router as chat_router
 
 
 app = FastAPI(title="NetPlay P2P Matcher API", version="1.0.0")

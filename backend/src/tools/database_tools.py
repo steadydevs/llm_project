@@ -38,13 +38,24 @@ def get_account_info(user_id: str) -> str:
 
         if result:
             name, reputation, city, platforms = result
-            console_list = ", ".join(platforms) if platforms else "None"
-            return f"Username: {name}\nReputation: {reputation}/5.0\nLocation: {city}\nConsoles: {console_list}"
+            return {
+                "user": {
+                    "name": name,
+                    "reputation": float(reputation),
+                    "city": city,
+                    "platforms": platforms or []
+                }
+            }
         
-        return "User not found"
+        return {
+            "user": None,
+            "message": "User not found"
+        }
     except Exception as e:
         print(f"❌ [DEBUG NETPLAY] Erro crítico na ferramenta: {str(e)}")
-        return f"Error accessing the database: {e}"
+        return {
+            "error": f"Error accessing the database: {str(e)}"
+        }
 
 @tool
 def search_local_games(user_id: str) -> str:
@@ -71,18 +82,26 @@ def search_local_games(user_id: str) -> str:
 
         cursor.close()
         conn.close()
+        
+        games = []
 
         if games_found:
-            response = "Physical games available near you:\n"
-            for game in games_found:
-                title, platform, condition, owner, distance = game
-                distance_km = round(distance / 1000, 1)
-                response += f"- {title} ({platform}) | Condition: {condition} | Owner: {owner} ({distance_km}km away)\n"
-            return response
+            for title, platform, condition, owner, distance in games_found:
+                games.append({
+                    "title": title,
+                    "platform": platform,
+                    "condition": condition,
+                    "owner": owner,
+                    "distance_km": round(distance / 1000, 1)
+                })
         
-        return "We couldn't find any physical games available near you at the moment."
+        return {
+            "error": "We couldn't find any physical games available near you at the moment."
+        }
     
     except Exception as e:
         print(f" [DEBUG NETPLAY] Erro crítico na ferramenta: {str(e)}")
-        return f"Error during local search: {e}"
+        return {
+            "error":"Error during local search: {e}"
+            }
     
