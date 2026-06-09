@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { Search, Settings } from "lucide-react";
 import { FilterButton } from "../../Ui/FilterButton.tsx";
-import { DealsChatMessage } from "../Messages/DealsChatMessage.tsx";
+// import { DealsChatMessage } from "./MessagesPages/DealsChatMessage.tsx";
 import { Chatbot } from "../Messages/Chatbot2.tsx";
+import ChatRawgAPI from "./MessagesPages/ChatRawgAPI.tsx";
 
 const MESSAGE_COMPONENTS: Record<string, React.FC> = {
-  Deals: DealsChatMessage,
-  Chatbot: Chatbot,
+  // Deals: DealsChatMessage,
+  ChatSupabase: Chatbot,
+  ChatRawgAPI: ChatRawgAPI,
 };
 
 export const Messages = () => {
-  const [activeFilter, setActiveFilter] = useState("Chatbot");
+  const [activeFilter, setActiveFilter] = useState("ChatSupabase");
   const ActiveComponent = MESSAGE_COMPONENTS[activeFilter];
 
   return (
@@ -24,7 +26,7 @@ export const Messages = () => {
       </div>
 
       <div className="flex gap-2 mb-8">
-        {["Deals", "Chatbot"].map((filter) => (
+        {["Chat Supabase", "Chat RawgAPI"].map((filter) => (
           <FilterButton
             key={filter}
             label={filter}
