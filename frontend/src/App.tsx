@@ -1,10 +1,10 @@
-import { Navbar } from "./components/Navbar";
-import { Profile } from "./components/Profile";
+import { Navbar } from "./components/Ui/Navbar";
+import { Profile } from "./components/Pages/Profile";
 import { useState } from "react";
-import { Explore } from "./components/Explore";
-import { Deals } from "./components/Deals";
-import { Wishlist } from "./components/WishList";
-import { Messages } from "./components/Messages";
+import { Explore } from "./components/Pages/Explore";
+import { Deals } from "./components/Pages/Deals";
+import { Wishlist } from "./components/Pages/WishList";
+import { Messages } from "./components/Pages/Messages/Messages";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("Messages");
