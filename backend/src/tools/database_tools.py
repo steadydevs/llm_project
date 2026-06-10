@@ -98,10 +98,14 @@ def search_local_games(user_id: str) -> str:
                     "owner": owner,
                     "distance_km": round(distance / 1000, 1)
                 })
+
+        if games:
+            response_text = 'Jogos encontrados:\n'
+            for g in games:
+                response_text += f"- {g['title']} ({g['platform']}) | Condição: {g['condition']} | Distância: {g['distance_km']}km | Dono: {g['owner']}\n"        
+            return response_text
         
-        return {
-            "error": "We couldn't find any physical games available near you at the moment."
-        }
+        return "Nenhum jogo físico encontrado disponível para troca ou aluguel em um raio de 10km no momento."
     
     except Exception as e:
         print(f" [DEBUG NETPLAY] Erro crítico na ferramenta: {str(e)}")
