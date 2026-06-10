@@ -54,15 +54,13 @@ class NativeToolAgent:
 
                 if "user_id" in tool_args or tool_name in ['get_account_info', 'search_local_games']:
                     tool_args['user_id']=user_id
-                    
+
                 tool_id = tool_call["id"]
                 tool_to_call = self.tools_map.get(tool_name)
                 
                 if tool_to_call:
                     print(f"\n[AGENT] Executando ferramenta: {tool_name} com argumentos {tool_args}", flush=True)
                     try:
-                        if "user_id" in tool_to_call.args:
-                            tool_args["user_id"] = user_id
                         tool_output = tool_to_call.invoke(tool_args)
                     except Exception as e:
                         tool_output = {"error": str(e)}
