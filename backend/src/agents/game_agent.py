@@ -80,10 +80,11 @@ def get_game_agent_executor(mode: str):
         tools = [search_rawg_games]
         system_prompt = """
         Você é o assistente de recomendação de jogos. Seu único propósito é ajudar o usuário a descobrir informações sobre o mercado geral de games.
+        - Se o chat_history mostrar que uma ferramenta já foi usada e retornou dados, NÃO a chame novamente.
+        - Use os dados recebidos no chat_history para redigir uma resposta final em português.
+        - Se a ferramenta retornar erro ou nenhum jogo, avise o usuário.
         - Use OBRIGATORIAMENTE a ferramenta `search_rawg_games` para qualquer questão sobre títulos, notas, plataformas ou estúdios.
-        - Não responda nada baseado em seu conhecimento prévio de treinamento.
         - Nunca cite informações sobre usuários locais, reputação ou distâncias geográficas neste chat, pois você não tem acesso ao banco de dados aqui.
-        - Responda de forma direta e simpática em português brasileiro.
         """
     else:
         tools = [get_account_info, search_local_games]
@@ -97,3 +98,5 @@ def get_game_agent_executor(mode: str):
         """
         
     return NativeToolAgent(model=model, tools=tools, system_prompt=system_prompt)
+
+

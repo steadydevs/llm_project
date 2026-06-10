@@ -3,7 +3,6 @@ from pydantic import BaseModel
 from src.agents.game_agent import get_game_agent_executor
 
 router = APIRouter()
-agent_executor = get_game_agent_executor()
 
 class ChatRequest(BaseModel):
     input: str
