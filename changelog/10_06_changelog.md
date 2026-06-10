@@ -697,3 +697,106 @@ def get_game_agent_executor(mode: str):
     return NativeToolAgent(model=model, tools=tools, system_prompt=system_prompt)
 
 ```
+
+### database_tools change
+
+#### Fixed: get_account_info não estava recebendo o user_id
+
+```python
+@tool
+def get_account_info(user_id: str) -> str:
+    """Returns the account and profile information of the logged-in user directly from the database."""
+
+    if user_id == "user_id" or not user_id:  # <------------ MUDANÇA: verificação mais explícita (a LLM estava recebendo uma string listeral do user_id)
+        return "Erro: O ID do usuário não foi enviado corretamente"
+
+    try:
+        conn = get_database_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT name, reputation, city, platforms FROM users WHERE id = %s;", (user_id,))
+        result = cursor.fetchone()
+
+        cursor.close()
+        conn.close()
+
+        if result:
+            name, reputation, city, platforms = result
+            return {
+                "user": {
+                    "name": name,
+                    "reputation": float(reputation),
+                    "city": city,
+                    "platforms": platforms or []
+                }
+            }
+
+        return {
+            "user": None,
+            "message": "User not found"
+        }
+    except Exception as e:
+        print(f"[DEBUG NETPLAY] Erro ao acessar o banco de dados: {str(e)}")
+        return {
+            "error": f"Error accessing the database: {str(e)}"
+        }
+
+```
+
+#### Fixed: search_local_games: faltava adicionar os jogos encontrados à lista
+
+```python
+
+@tool
+def search_local_games(user_id: str) -> str:
+    """Searches for physical games available for trade/rent within a 10km radius of the user, excluding their own."""
+    try:
+        conn = get_database_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT catalog.title, catalog.platform, inventory.condition, owner.name,
+            ST_Distance(owner.location, searcher.location) as distance
+            FROM user_inventory AS inventory
+            JOIN game_catalog AS catalog ON inventory.game_id = catalog.id
+            JOIN users AS owner ON inventory.user_id = owner.id
+            CROSS JOIN (SELECT location FROM users WHERE
+            id='a1b2c3d4-e5f6-4a1b-8c2d-3e4f5a6b7c8d') AS searcher
+            WHERE inventory.status = 'AVAILABLE'
+            AND owner.id != 'a1b2c3d4-e5f6-4a1b-8c2d-3e4f5a6b7c8d'
+            AND ST_DWithin(owner.location, searcher.location, 10000)
+            ORDER BY distance ASC;
+        """, (user_id, user_id))
+
+        games_found = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        games = []
+
+        if games_found:
+            for title, platform, condition, owner, distance in games_found:
+                games.append({
+                    "title": title,
+                    "platform": platform,
+                    "condition": condition,
+                    "owner": owner,
+                    "distance_km": round(distance / 1000, 1)
+                })
+
+        if games: # <--------- ADICIONADO: faltava adicionar os jogos à lista
+            response_text = 'Jogos encontrados:\n'
+            for g in games:
+                response_text += f"- {g['title']} ({g['platform']}) | Condição: {g['condition']} | Distância: {g['distance_km']}km | Dono: {g['owner']}\n"
+            return response_text
+
+        return "Nenhum jogo físico encontrado disponível para troca ou aluguel em um raio de 10km no momento."
+
+    except Exception as e:
+        print(f" [DEBUG NETPLAY] Erro crítico na ferramenta: {str(e)}")
+        return {
+            "error":"Error during local search: {e}"
+            }
+
+```
