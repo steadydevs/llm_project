@@ -26,6 +26,10 @@ def get_database_connection():
 @tool
 def get_account_info(user_id: str) -> str:
     """Returns the account and profile information of the logged-in user directly from the database."""
+
+    if user_id == "user_id" or not user_id:
+        return "Erro: O ID do usuário não foi enviado corretamente"
+
     try:
         conn = get_database_connection()
         cursor = conn.cursor()
@@ -52,7 +56,7 @@ def get_account_info(user_id: str) -> str:
             "message": "User not found"
         }
     except Exception as e:
-        print(f"❌ [DEBUG NETPLAY] Erro crítico na ferramenta: {str(e)}")
+        print(f"[DEBUG NETPLAY] Erro ao acessar o banco de dados: {str(e)}")
         return {
             "error": f"Error accessing the database: {str(e)}"
         }

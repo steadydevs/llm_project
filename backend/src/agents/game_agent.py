@@ -57,7 +57,7 @@ class NativeToolAgent:
                 if tool_to_call:
                     print(f"\n[AGENT] Executando ferramenta: {tool_name} com argumentos {tool_args}", flush=True)
                     try:
-                        if "user_id" in tool_to_call.args and "user_id" not in tool_args:
+                        if "user_id" in tool_to_call.args:
                             tool_args["user_id"] = user_id
                         tool_output = tool_to_call.invoke(tool_args)
                     except Exception as e:
