@@ -51,6 +51,10 @@ class NativeToolAgent:
             for tool_call in response.tool_calls:
                 tool_name = tool_call["name"]
                 tool_args = tool_call["args"]
+
+                if "user_id" in tool_args or tool_name in ['get_account_info', 'search_local_games']:
+                    tool_args['user_id']=user_id
+                    
                 tool_id = tool_call["id"]
                 tool_to_call = self.tools_map.get(tool_name)
                 
