@@ -1,18 +1,16 @@
 import { useState } from "react";
 import { Search, Settings } from "lucide-react";
 import { FilterButton } from "../../Ui/FilterButton.tsx";
-// import { DealsChatMessage } from "./MessagesPages/DealsChatMessage.tsx";
-import { Chatbot } from "../Messages/Chatbot2.tsx";
-import ChatRawgAPI from "./MessagesPages/ChatRawgAPI.tsx";
+import { ChatbotRawgAPI } from "./ChatbotRawgAPI.tsx";
+import ChatbotSupabase from "./ChatbotSupabase.tsx";
 
 const MESSAGE_COMPONENTS: Record<string, React.FC> = {
-  // Deals: DealsChatMessage,
-  ChatSupabase: Chatbot,
-  ChatRawgAPI: ChatRawgAPI,
+  "Chat Supabase": ChatbotSupabase,
+  "Chat RawgAPI": ChatbotRawgAPI,
 };
 
 export const Messages = () => {
-  const [activeFilter, setActiveFilter] = useState("ChatSupabase");
+  const [activeFilter, setActiveFilter] = useState("Chat Supabase");
   const ActiveComponent = MESSAGE_COMPONENTS[activeFilter];
 
   return (
@@ -37,7 +35,11 @@ export const Messages = () => {
       </div>
 
       <div className="flex-1 overflow-hidden">
-        <ActiveComponent />
+        {ActiveComponent ? (
+          <ActiveComponent />
+        ) : (
+          <p>Componente não encontrado</p>
+        )}{" "}
       </div>
     </div>
   );

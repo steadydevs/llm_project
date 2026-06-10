@@ -10,11 +10,11 @@ interface Message {
 
 const LOGGED_IN_USER_ID = "a1b2c3d4-e5f6-4a1b-8c2d-3e4f5a6b7c8d";
 
-export const Chatbot = () => {
+export const ChatbotRawgAPI = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      text: "Olá, Diogo! Sou o assistente do NetPlay. Como posso te ajudar com trocas ou aluguéis de jogos hoje?",
+      text: "Olá! Sou o assistente de recomendação de jogos. Pergunte qualquer coisa sobre títulos, plataformas, avaliações e datas de lançamento de jogos que você tem em mente.",
       sender: "bot",
     },
   ]);
@@ -40,13 +40,14 @@ export const Chatbot = () => {
       sender: "user",
     };
     setMessages((prev) => [...prev, newUserMessage]);
-
     setIsLoading(true);
 
     try {
+      // Enviando o identificador "ChatRawgAPI" na rota única
       const botResponseText = await sendChatMessage(
         userMessageText,
         LOGGED_IN_USER_ID,
+        "ChatRawgAPI",
       );
 
       const newBotMessage: Message = {
@@ -72,14 +73,20 @@ export const Chatbot = () => {
 
   return (
     <div className="flex flex-col h-[calc(100vh-14rem)] bg-white overflow-hidden">
-      <main className="flex-1 overflow-y-auto p-4 space-y-4 ">
+      {/* Área de Mensagens */}
+      <main className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`flex gap-3 max-w-[85%] ${msg.sender === "user" ? "ml-auto flex-row-reverse" : ""}`}
+            className={`flex gap-3 max-w-[85%] ${
+              msg.sender === "user" ? "ml-auto flex-row-reverse" : ""
+            }`}
           >
+            {/* Avatar */}
             <div
-              className={`size-8 rounded-full flex items-center justify-center shrink-0 ${msg.sender === "user" ? "bg-neutral-700" : "bg-primary"}`}
+              className={`size-8 rounded-full flex items-center justify-center shrink-0 ${
+                msg.sender === "user" ? "bg-neutral-700" : "bg-primary"
+              }`}
             >
               {msg.sender === "user" ? (
                 <User size={16} className="text-white" />
@@ -87,38 +94,52 @@ export const Chatbot = () => {
                 <Bot size={16} className="text-white" />
               )}
             </div>
+
+            {/* Balão de Texto */}
             <div
-              className={`px-4 py-3 rounded-2xl text-sm ${msg.sender === "user" ? "bg-neutral-700 text-white" : "bg-neutral-100 text-neutral-900 border border-neutral-200"}`}
+              className={`px-4 py-3 rounded-2xl text-sm ${
+                msg.sender === "user"
+                  ? "bg-neutral-700 text-white"
+                  : "bg-neutral-100 text-neutral-900 border border-neutral-200"
+              }`}
             >
               {msg.text}
             </div>
           </div>
         ))}
+
+        {/* Indicador de Carregamento Customizado para RAWG */}
         {isLoading && (
           <div className="flex gap-3">
             <div className="size-8 rounded-full bg-primary flex items-center justify-center">
               <Bot size={16} className="text-white" />
             </div>
-            <div className="px-4 py-3 rounded-2xl bg-neutral-100 text-neutral-500 text-sm">
-              Consultando...
+            <div className="px-4 py-3 rounded-2xl bg-neutral-100 text-neutral-500 text-sm animate-pulse">
+              Consultando a enciclopédia de jogos...
             </div>
           </div>
         )}
         <div ref={messagesEndRef} />
       </main>
 
+      {/* Input de Mensagem */}
       <footer className="p-4 border-t border-neutral-100 bg-white mb-8">
-        <form onSubmit={handleSendMessage} className="flex gap-2">
+        <form
+          onSubmit={handleSendMessage}
+          className="flex gap-2 max-w-4xl mx-auto"
+        >
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className="flex-1 px-4 py-3 rounded-full bg-neutral-100 border border-neutral-200 outline-none focus:ring-2 focus:ring-primary"
-            placeholder="Mensagem..."
+            className="flex-1 px-4 py-3 rounded-full bg-neutral-100 border border-neutral-200 outline-none focus:ring-2 focus:ring-primary text-sm text-neutral-900 placeholder-neutral-400"
+            placeholder="Busque por Elden Ring, GTA VI, notas, plataformas..."
+            disabled={isLoading}
           />
           <button
             type="submit"
-            className="p-3 rounded-full bg-primary text-white disabled:opacity-50"
+            disabled={isLoading || !input.trim()}
+            className="p-3 rounded-full bg-primary text-white disabled:opacity-50 transition-opacity hover:opacity-90 flex items-center justify-center shrink-0"
           >
             <Send size={18} />
           </button>
@@ -128,4 +149,4 @@ export const Chatbot = () => {
   );
 };
 
-export default Chatbot;
+export default ChatbotRawgAPI;

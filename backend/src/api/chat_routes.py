@@ -8,10 +8,12 @@ agent_executor = get_game_agent_executor()
 class ChatRequest(BaseModel):
     input: str
     user_id: str
+    chat_mode: str
 
 @router.post("/chat")
 async def handle_chat_message(request: ChatRequest):
     try:
+        agent_executor = get_game_agent_executor(mode=request.chat_mode)
         result = agent_executor.invoke({
             "input": request.input,
             "user_id": request.user_id
