@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, Bot, User, Gamepad2, MapPin } from "lucide-react";
+import { Send, Bot, User } from "lucide-react";
 import { sendChatMessage } from "../../../services/api";
 import { useAppContext } from "../../../context/AppContext";
 
@@ -77,7 +77,11 @@ export const ChatbotSupabase = () => {
     const parts = text.split(/(\*\*.*?\*\*)/g);
     return parts.map((part, index) => {
       if (part.startsWith("**") && part.endsWith("**")) {
-        return <strong key={index} className="font-bold text-neutral-900">{part.slice(2, -2)}</strong>;
+        return (
+          <strong key={index} className="font-bold text-neutral-900">
+            {part.slice(2, -2)}
+          </strong>
+        );
       }
       return part;
     });
@@ -86,19 +90,23 @@ export const ChatbotSupabase = () => {
   // Rich rendering of chatbot texts to display lists and games as premium cards
   const renderMessageContent = (text: string) => {
     const lines = text.split("\n");
-    
+
     return (
       <div className="space-y-2">
         {lines.map((line, idx) => {
           // Detect local game format: "- Title (Platform) | Condição: X | Distância: Ykm | Dono: Z"
-          const gameMatch = line.match(/^-\s*(.*?)\s*\((.*?)\)\s*\|\s*Condição:\s*(.*?)\s*\|\s*Distância:\s*(.*?)\s*\|\s*Dono:\s*(.*)/i);
-          
+          const gameMatch = line.match(
+            /^-\s*(.*?)\s*\((.*?)\)\s*\|\s*Condição:\s*(.*?)\s*\|\s*Distância:\s*(.*?)\s*\|\s*Dono:\s*(.*)/i,
+          );
+
           if (gameMatch) {
             const [_, title, platform, condition, distance, owner] = gameMatch;
-            
+
             // Look up in AppContext to find game ID and allow Human-in-the-loop requests
             const matchedGame = availableGames.find(
-              (g) => g.title.toLowerCase() === title.trim().toLowerCase() && g.platform === platform.trim()
+              (g) =>
+                g.title.toLowerCase() === title.trim().toLowerCase() &&
+                g.platform === platform.trim(),
             );
 
             return (
@@ -108,24 +116,42 @@ export const ChatbotSupabase = () => {
               >
                 <div className="space-y-1.5 flex-1 min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded border uppercase shrink-0 ${
-                      platform.includes("Switch") ? "bg-red-50 text-red-600 border-red-100" :
-                      platform.includes("PS5") ? "bg-blue-50 text-blue-600 border-blue-100" :
-                      "bg-neutral-50 text-neutral-600 border-neutral-100"
-                    }`}>
+                    <span
+                      className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded border uppercase shrink-0 ${
+                        platform.includes("Switch")
+                          ? "bg-red-50 text-red-600 border-red-100"
+                          : platform.includes("PS5")
+                            ? "bg-blue-50 text-blue-600 border-blue-100"
+                            : "bg-neutral-50 text-neutral-600 border-neutral-100"
+                      }`}
+                    >
                       {platform}
                     </span>
-                    <h4 className="font-bold text-neutral-800 text-xs truncate">{title}</h4>
+                    <h4 className="font-bold text-neutral-800 text-xs truncate">
+                      {title}
+                    </h4>
                   </div>
                   <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-[10px] text-neutral-500 font-medium">
-                    <span className="flex items-center gap-1">📍 {distance}</span>
+                    <span className="flex items-center gap-1">
+                      📍 {distance}
+                    </span>
                     <span className="w-1 h-1 rounded-full bg-neutral-300" />
-                    <span>Est: <span className="font-semibold text-neutral-700">{condition}</span></span>
+                    <span>
+                      Est:{" "}
+                      <span className="font-semibold text-neutral-700">
+                        {condition}
+                      </span>
+                    </span>
                     <span className="w-1 h-1 rounded-full bg-neutral-300" />
-                    <span>Dono: <span className="font-semibold text-neutral-700">{owner}</span></span>
+                    <span>
+                      Dono:{" "}
+                      <span className="font-semibold text-neutral-700">
+                        {owner}
+                      </span>
+                    </span>
                   </div>
                 </div>
-                
+
                 {matchedGame && (
                   <button
                     onClick={() => requestGame(matchedGame.id, "trade")}
@@ -142,9 +168,14 @@ export const ChatbotSupabase = () => {
           const bulletMatch = line.match(/^[-*]\s*(.*)/);
           if (bulletMatch) {
             return (
-              <div key={idx} className="flex items-start gap-2 pl-2 my-1 text-sm text-neutral-800 leading-relaxed">
+              <div
+                key={idx}
+                className="flex items-start gap-2 pl-2 my-1 text-sm text-neutral-800 leading-relaxed"
+              >
                 <span className="size-1.5 rounded-full bg-primary mt-2 shrink-0" />
-                <span className="flex-1 whitespace-pre-wrap">{parseBoldText(bulletMatch[1])}</span>
+                <span className="flex-1 whitespace-pre-wrap">
+                  {parseBoldText(bulletMatch[1])}
+                </span>
               </div>
             );
           }
@@ -153,16 +184,26 @@ export const ChatbotSupabase = () => {
           const numMatch = line.match(/^(\d+)\.\s*(.*)/);
           if (numMatch) {
             return (
-              <div key={idx} className="flex items-start gap-2 pl-2 my-1 text-sm text-neutral-800 leading-relaxed">
-                <span className="text-primary font-bold text-xs mt-1 shrink-0">{numMatch[1]}.</span>
-                <span className="flex-1 whitespace-pre-wrap">{parseBoldText(numMatch[2])}</span>
+              <div
+                key={idx}
+                className="flex items-start gap-2 pl-2 my-1 text-sm text-neutral-800 leading-relaxed"
+              >
+                <span className="text-primary font-bold text-xs mt-1 shrink-0">
+                  {numMatch[1]}.
+                </span>
+                <span className="flex-1 whitespace-pre-wrap">
+                  {parseBoldText(numMatch[2])}
+                </span>
               </div>
             );
           }
 
           if (!line.trim()) return <div key={idx} className="h-1" />;
           return (
-            <p key={idx} className="text-sm text-neutral-800 leading-relaxed whitespace-pre-wrap">
+            <p
+              key={idx}
+              className="text-sm text-neutral-800 leading-relaxed whitespace-pre-wrap"
+            >
               {parseBoldText(line)}
             </p>
           );
@@ -185,14 +226,12 @@ export const ChatbotSupabase = () => {
             {/* Avatar */}
             <div
               className={`size-8 rounded-full flex items-center justify-center shrink-0 shadow-sm ${
-                msg.sender === "user" ? "bg-neutral-800" : "bg-primary text-white"
+                msg.sender === "user"
+                  ? "bg-neutral-800"
+                  : "bg-primary text-white"
               }`}
             >
-              {msg.sender === "user" ? (
-                <User size={16} />
-              ) : (
-                <Bot size={16} />
-              )}
+              {msg.sender === "user" ? <User size={16} /> : <Bot size={16} />}
             </div>
 
             {/* Bubble */}
@@ -204,7 +243,9 @@ export const ChatbotSupabase = () => {
               }`}
             >
               {msg.sender === "user" ? (
-                <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.text}</p>
+                <p className="text-sm whitespace-pre-wrap leading-relaxed">
+                  {msg.text}
+                </p>
               ) : (
                 renderMessageContent(msg.text)
               )}
