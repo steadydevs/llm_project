@@ -1,4 +1,5 @@
 import { Gamepad2, Heart, MessageSquare, Search, User } from "lucide-react";
+import { useIntl } from "react-intl";
 
 interface NavbarProps {
   currentPage: string;
@@ -6,6 +7,7 @@ interface NavbarProps {
 }
 
 export const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
+  const intl = useIntl();
   const navItems = [
     { name: "Explore", icon: Search },
     { name: "Wishlist", icon: Heart },
@@ -32,7 +34,7 @@ export const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
                 }`}
               >
                 <Icon size={22} />
-                {item.name}
+                {intl.formatMessage({ id: `nav.${item.name.toLowerCase()}` })}
               </li>
             );
           })}
@@ -43,3 +45,4 @@ export const Navbar = ({ currentPage, onNavigate }: NavbarProps) => {
 };
 
 export default Navbar;
+

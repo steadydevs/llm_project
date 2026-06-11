@@ -10,18 +10,19 @@ function App() {
   const [currentPage, setCurrentPage] = useState("Messages");
 
   return (
-    <div className="min-h-screen bg-white">
-      <main>
+    <div className="min-h-screen bg-neutral-100 flex flex-col pb-20">
+      <main className="flex-1 overflow-y-auto">
         {currentPage === "Explore" && <Explore />}
         {currentPage === "Wishlist" && <Wishlist />}
         {currentPage === "Deals" && <Deals />}
         {currentPage === "Messages" && <Messages />}
         {currentPage === "Profile" && <Profile />}
-
-        <Navbar currentPage={currentPage} onNavigate={setCurrentPage} />
       </main>
+      <Navbar currentPage={currentPage} onNavigate={setCurrentPage} />
     </div>
   );
 }
 
 export default App;
+
+
